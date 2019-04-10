@@ -545,11 +545,12 @@ func (s *RecursiveSchema) MarshalJSON() ([]byte, error) {
 
 // SchemaField represents a schema field for Avro record.
 type SchemaField struct {
-	Name       string      `json:"name,omitempty"`
-	Doc        string      `json:"doc,omitempty"`
-	Default    interface{} `json:"default"`
-	Type       Schema      `json:"type,omitempty"`
-	Properties map[string]interface{}
+	Name        string      `json:"name,omitempty"`
+	Doc         string      `json:"doc,omitempty"`
+	Default     interface{} `json:"default"`
+	Type        Schema      `json:"type,omitempty"`
+	LogicalType string      `json:"logicalType,omitempty"`
+	Properties  map[string]interface{}
 }
 
 // Gets a custom non-reserved property from this schemafield and a bool representing if it exists.
@@ -566,34 +567,38 @@ func (this *SchemaField) Prop(key string) (interface{}, bool) {
 func (s *SchemaField) MarshalJSON() ([]byte, error) {
 	if s.Type.Type() == Null || (s.Type.Type() == Union && s.Type.(*UnionSchema).Types[0].Type() == Null) {
 		return json.Marshal(struct {
-			Name    string      `json:"name,omitempty"`
-			Doc     string      `json:"doc,omitempty"`
-			Default interface{} `json:"default"`
-			Type    Schema      `json:"type,omitempty"`
+			Name        string      `json:"name,omitempty"`
+			Doc         string      `json:"doc,omitempty"`
+			Default     interface{} `json:"default"`
+			Type        Schema      `json:"type,omitempty"`
+			LogicalType string      `json:"logicalType,omitempty"`
 		}{
-			Name:    s.Name,
-			Doc:     s.Doc,
-			Default: s.Default,
-			Type:    s.Type,
+			Name:        s.Name,
+			Doc:         s.Doc,
+			Default:     s.Default,
+			Type:        s.Type,
+			LogicalType: s.LogicalType,
 		})
 	}
 
 	return json.Marshal(struct {
-		Name    string      `json:"name,omitempty"`
-		Doc     string      `json:"doc,omitempty"`
-		Default interface{} `json:"default,omitempty"`
-		Type    Schema      `json:"type,omitempty"`
+		Name        string      `json:"name,omitempty"`
+		Doc         string      `json:"doc,omitempty"`
+		Default     interface{} `json:"default,omitempty"`
+		Type        Schema      `json:"type,omitempty"`
+		LogicalType string      `json:"logicalType,omitempty"`
 	}{
-		Name:    s.Name,
-		Doc:     s.Doc,
-		Default: s.Default,
-		Type:    s.Type,
+		Name:        s.Name,
+		Doc:         s.Doc,
+		Default:     s.Default,
+		Type:        s.Type,
+		LogicalType: s.LogicalType,
 	})
 }
 
 // String returns a JSON representation of SchemaField.
 func (s *SchemaField) String() string {
-	return fmt.Sprintf("[SchemaField: Name: %s, Doc: %s, Default: %v, Type: %s]", s.Name, s.Doc, s.Default, s.Type)
+	return fmt.Sprintf("[SchemaField: Name: %s, Doc: %s, Default: %v, Type: %s LogicalType: %s]", s.Name, s.Doc, s.Default, s.Type, s.LogicalType)
 }
 
 // EnumSchema implements Schema and represents Avro enum type.
